@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Library Database</h1>
+    <div class="button-group">
+        <a href="{% url 'add' %}" class="btn btn-primary">Add Book</a>
+        <a href="{% url 'delete' %}" class="btn btn-danger">Delete Book</a>
+        <a href="{% url 'update' %}" class="btn btn-success">Update Book Status</a>
+        <a href="{% url 'report' %}" class="btn btn-info">View Reports</a>
+    </div>
+{% endblock %}

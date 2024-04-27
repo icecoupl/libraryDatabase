@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Delete Book Copy</h1>
+<form method="post" action="{% url 'delete' %}"> 
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="librarySelect">Library</label>
+        <select class="form-control" id="librarySelect" name="library_id">
+          <option value="">Select a Library</option>
+          {% for library in libraries %}
+            <option value="{{ library.id }}">{{ library.name }}</option>
+          {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="bookSelect">Book</label>
+        <select class="form-control" id="bookSelect" name="book_id">
+          <option value="">Select a Book</option>
+          <!-- Options will be populated based on library selection -->
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="bookCopySelect">Book Copy</label>
+        <select class="form-control" id="bookCopySelect" name="book_copy_id">
+          <option value="">Select a Book Copy</option>
+          <!-- Options will be populated based on book selection -->
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Delete</button>
+</form>
+
+<script>
+// JavaScript for handling dynamic dropdown updates
+document.addEventListener("DOMContentLoaded", function() {
+  const librarySelect = document.getElementById('librarySelect');
+  const bookSelect = document.getElementById('bookSelect');
+  const bookCopySelect = document.getElementById('bookCopySelect');
+
+  librarySelect.onchange = function() {
+    const libraryId = this.value;
+    bookSelect.innerHTML = '<option value="">Select a Book</option>'; // Reset book select
+    bookCopySelect.innerHTML = '<option value="">Select a Book Copy</option>'; // Reset book copy select
+
+    if (libraryId) {
+      fetch(`/get-books/${libraryId}/`) // Adjust URL as needed
+        .then(response => response.json())
+        .then(data => {
+          data.books.forEach(book => {
+            bookSelect.innerHTML += `<option value="${book.id}">${book.title}</option>`;
+          });
+        });
+    }
+  };
+
+  bookSelect.onchange = function() {
+    const bookId = this.value;
+    const libraryId = librarySelect.value; // Get the selected library ID
+    bookCopySelect.innerHTML = '<option value="">Select a Book Copy</option>'; // Reset
+
+    if (bookId && libraryId) {
+        fetch(`/get-book-copies/${bookId}/${libraryId}/`)
+
+        .then(response => response.json())
+        .then(data => {
+            bookCopySelect.innerHTML = '<option value="">Select a Book Copy</option>'; // Reset book copy select
+data.book_copies.forEach(copy => {
+    bookCopySelect.innerHTML += `<option value="${copy.id}">${copy.id} - ${copy.status}</option>`;
+});
+
+        });
+    }
+};
+
+});
+</script>
+
+{% endblock %}
